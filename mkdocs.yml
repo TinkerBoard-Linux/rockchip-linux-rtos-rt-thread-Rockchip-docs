@@ -1,0 +1,65 @@
+site_name: RKDocs
+site_description: Project documentation with Rockchip.
+site_author: Rockchip Team
+use_directory_urls: false
+
+theme:
+    name: mkdocs
+    highlightjs: true
+    navigation_depth: 4
+
+nav:
+    - Home: index.md
+    - Quick Start: quick-start/Rockchip_Developer_Guide_RT-Thread/Rockchip_Developer_Guide_RT-Thread_CN.md
+    - User Guide:
+        - Application:
+            - Audio and Display: user-guide/app/Rockchip_Developer_Guide_RT-Thread_Application_Demo_CN.md
+            - Display: user-guide/app/Rockchip_Developer_Guide_RT-Thread_Display_APP_CN.md
+            - Ymodem: user-guide/app/Rockchip_Developer_Guide_RT-Thread_Ymodem_CN.md
+        - Driver:
+            - Audio: user-guide/driver/audio/Rockchip_Developer_Guide_RT-Thread_Audio_CN.md
+            - Clock: user-guide/driver/clock/Rockchip_Developer_Guide_RTOS_Clock_CN.md
+            - Display: user-guide/driver/display/Rockchip_Developer_Guide_RT-Thread_Display_CN.md
+            - DSP: user-guide/driver/dsp/Rockchip_Developer_Guide_RT-Thread_DSP_CN.md
+            - DVFS: user-guide/driver/dvfs/Rockchip_Developer_Guide_RT-Thread_DVFS_CN.md
+            - I2C: user-guide/driver/i2c/Rockchip_Developer_Guide_RT-Thread_I2C_CN.md
+            - Power Manager: user-guide/driver/power/Rockchip_Developer_Guide_RT-Thread_Power_CN.md
+            - SDIO: user-guide/driver/sdio/Rockchip_Developer_Guide_RT-Thread_SDIO_CN.md
+            - SPI: user-guide/driver/spi/Rockchip_Developer_Guide_RT-Thread_SPI_CN.md
+            - UART: user-guide/driver/uart/Rockchip_Developer_Guide_RT-Thread_UART_CN.md
+            - USB: user-guide/driver/usb/Rockchip_Developer_Guide_RT-Thread_USB_CN.md
+            - VICAP: user-guide/driver/vicap/Rockchip_Developer_Guide_RTOS_VICAP_CN.md
+    - API Reference:
+        - Driver: api-reference/driver/html/modules.html
+        - HAL: api-reference/hal/html/index.html
+    - FAQ:
+        - Audio: missing.md
+        - Board:
+            - RK2108_EVB: faq/board/Rockchip_Developer_FAQ_RK2108_EVB_CN.md
+        - Clock: missing.md
+        - Display: missing.md
+        - DSP: missing.md
+        - I2C: missing.md
+        - Power Manager: missing.md
+        - SDIO: missing.md
+        - SPI: missing.md
+        - UART: missing.md
+        - USB: missing.md
+        - Misc: missing.md
+    - About:
+        - Release Notes: about/release-notes.md
+
+extra_css:
+    - css/extra.css
+
+markdown_extensions:
+    - toc:
+        permalink: 
+    - admonition
+    - def_list
+
+copyright: Copyright &copy; 2020 <a href="http://www.rock-chips.com">Fuzhou Rockchip Electronics Co., Ltd. </a>All rights reserved.
+
+plugins:
+    - search:
+        lang: en

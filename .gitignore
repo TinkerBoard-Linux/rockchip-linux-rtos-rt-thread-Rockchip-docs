@@ -1,0 +1,9 @@
+site/
+docs/api-reference/driver/html/
+docs/api-reference/hal/html/
+
+._*
+
+# Ignore OS X Desktop Services Store files
+.DS_Store
+._.DS_Store
