@@ -15,6 +15,7 @@ nav:
         - Application:
             - Audio and Display: user-guide/app/Rockchip_Developer_Guide_RT-Thread_Application_Demo_CN.md
             - Display: user-guide/app/Rockchip_Developer_Guide_RT-Thread_Display_APP_CN.md
+            - OTA: user-guide/app/Rockchip_Developer_Guide_RT-Thread_OTA_CN.md
             - Ymodem: user-guide/app/Rockchip_Developer_Guide_RT-Thread_Ymodem_CN.md
         - Driver:
             - Audio: user-guide/driver/audio/Rockchip_Developer_Guide_RT-Thread_Audio_CN.md
