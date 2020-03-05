@@ -1,6 +1,6 @@
 # Rockchip RT-Thread 电源配置说明
 
-发布版本：1.0
+发布版本：V1.1.0
 
 作者邮箱：<zhangqing@rock-chips.com>
 
@@ -33,9 +33,10 @@
 
 **修订记录**
 
-| **日期**   | **版本** | **作者** | **修改说明**       |
-| ---------- | -------- | -------- | ------------------ |
-| 2019-07-17 | V1.0     | Elaine   | 第一次临时版本发布 |
+| **日期**   | **版本** | **作者** | **修改说明**                     |
+| ---------- | -------- | -------- | :------------------------------- |
+| 2019-07-17 | V1.0     | Elaine   | 第一次临时版本发布               |
+| 2020-03-06 | V1.1.0   | Tony.xie | 增加SOC集成LDO等电源模块支持描述 |
 
 ---
 
@@ -47,7 +48,7 @@
 
 * 支持 I2C 接口的 PMIC 调压、使能输出（如：RK808、RK818、RK809、RK817...）
 * 支持 I2C 接口的独立 DCDC 调压、使能输出（如：SYR82X、TCS452X...）
-* 支持 SOC 内部调压、使能输出（如：PISCES 内部封装的 LDO）
+* 支持针对 SOC 集成的 LDO 等电源模块的调压、使能输出（如：RK2108、PISCES...）
 
 ## 2 软件
 
@@ -64,8 +65,6 @@ uint32_t regulator_get_suspend_voltage(struct regulator_desc *desc);
 uint32_t regulator_get_real_voltage(struct regulator_desc *desc);
 rt_err_t regulator_enable(struct regulator_desc *desc);
 rt_err_t regulator_disable(struct regulator_desc *desc);
-rt_err_t regulator_suspend_enable(struct regulator_desc *desc);
-rt_err_t regulator_suspend_disable(struct regulator_desc *desc);
 void regulator_desc_init(struct regulator_desc *descs, uint32_t cnt);
 ```
 
@@ -79,7 +78,6 @@ rt_uint32_t pmic_get_suspend_voltage(struct pwr_i2cbus_desc *desc);
 rt_err_t pmic_set_suspend_voltage(struct pwr_i2cbus_desc *desc,
                                   rt_uint32_t voltUv);
 rt_err_t pmic_set_enable(struct pwr_i2cbus_desc *desc, rt_uint32_t enable);
-rt_err_t pmic_set_suspend_enable(struct pwr_i2cbus_desc *desc, rt_uint32_t enable);
 rt_uint32_t pmic_is_enabled(struct pwr_i2cbus_desc *desc);
 int pmic_desc_init(struct pwr_i2cbus_desc *descs, uint32_t cnt);
 void pmic_desc_deinit(void);
@@ -177,7 +175,6 @@ struct regulator_desc regulators[] =
             PWR_DESC_I2C8_SHIFT_RUN(0x10, 0),
             PWR_DESC_I2C8_SHIFT_SSPD(0x11, 0),
             PWR_DESC_I2C8_SHIFT_EN(0x10, 1 << 7),
-            PWR_DESC_I2C8_SHIFT_SSPD_EN(0x11, 1 << 7),
             .voltMask = 0x7f,
             PWR_DESC_LINEAR_VOLT(600000, 1300000, 6250),
         },
@@ -195,7 +192,6 @@ struct regulator_desc regulators[] =
             PWR_DESC_I2C8_SHIFT_RUN(0xBB, 0),
             PWR_DESC_I2C8_SHIFT_SSPD(0xBC, 0),
             PWR_DESC_I2C8_SHIFT_EN(0xB1, 1 << 0),
-            PWR_DESC_I2C8_SHIFT_SSPD_EN(0xB5, 1 << 0),
             .voltMask = 0x7f,
             PWR_DESC_LINEAR_VOLT(500000, 1300000, 12500),
         },
@@ -213,7 +209,6 @@ struct regulator_desc regulators[] =
             PWR_DESC_I2C8_SHIFT_RUN(0xBE, 0),
             PWR_DESC_I2C8_SHIFT_SSPD(0xBF, 0),
             PWR_DESC_I2C8_SHIFT_EN(0xB1, 1 << 1),
-            PWR_DESC_I2C8_SHIFT_SSPD_EN(0xB5, 1 << 1),
             .voltMask = 0x7f,
             PWR_DESC_LINEAR_VOLT(500000, 1300000, 12500),
         },
@@ -222,49 +217,46 @@ struct regulator_desc regulators[] =
 
 const struct regulator_init regulator_inits[] =
 {
-    REGULATOR_INIT("vdd_npu", PWR_ID_DSP_CORE, 875000， 875000， 1),
-    REGULATOR_INIT("vdd_log", PWR_ID_LOG, 800000， 800000， 1),
-    REGULATOR_INIT("vdd_arm", PWR_ID_CORE, 800000， 800000， 1),
+    DUMP_REGULATOR("vdd_npu", PWR_ID_DSP_CORE, 875000),
+    DUMP_REGULATOR("vdd_log", PWR_ID_LOG, 800000),
+    DUMP_REGULATOR("vdd_arm", PWR_ID_CORE, 800000),
 };
 const rt_uint32_t regulator_init_num = HAL_ARRAY_SIZE(regulator_inits);
 #endif
 ```
 
-**desc 参数详解**：
+1. **desc 参数详解**
 
-- **flag**：现在有三种：REGULATOR_FLG_I2C8、REGULATOR_FLG_LOCK、REGULATOR_FLG_INTREG
-    - **REGULATOR_FLG_I2C8**：8 位 I2C 传输的设备
-    - **REGULATOR_FLG_INTREG**：内部 SOC 调压设备
-    - **REGULATOR_FLG_LOCK**：是否需要锁（I2C 的设备都是需要的，内部调压的需要看场景和应用）
-- **desc.i2c_desc**：
-    - **flag**：需要配置的主要：PWR_FLG_FIXED、PWR_FLG_ALWAYSON、PWR_FLG_ENMASK
-        - **PWR_FLG_FIXED**：固定电压，不支持电压调整
-        - **PWR_FLG_ALWAYSON**：常开，不支持关闭输出
-        - **PWR_FLG_ENMASK**：使能位是否带有 mask（RK808、RK818 没有 MASK 功能，RK816、RK805、RK817、RK809 都有 MASK 功能）
-    - **info**：ePWR_ID pwrId，用于 desc 结构的获取
-    - **i2c8.name**：i2c0\i2c1...用于 i2c 的 device 的获取
-    - **i2c8.i2cAddr**：i2c 地址
-    - **PWR_DESC_I2C8_SHIFT_RUN**：运行电压配置（寄存器，偏移）
-    - **PWR_DESC_I2C8_SHIFT_SSPD**：休眠电压配置（寄存器，偏移）
-    - **PWR_DESC_I2C8_SHIFT_EN**：使能输出(寄存器, 偏移)
-    - **PWR_DESC_I2C8_SHIFT_SSPD_EN**：休眠使能输出(寄存器, 偏移)
-    - **voltMask**：电压 mask
-    - **PWR_DESC_LINEAR_VOLT**：电压设置步进(最小电压, 最大电压, 步进值)
-- **desc.intreg_desc**：(同 i2c_desc 类似)：
-    **PWR_INTREG_SHIFT_RUN**：运行电压配置（寄存器，偏移）
-    **PWR_INTREG_SHIFT_SSPD**：休眠电压配置（寄存器，偏移）
+* **flag**：支持下面几种配置
+    * **REGULATOR_FLG_I2C8**：8 位 I2C 传输的设备
+    * **REGULATOR_FLG_INTREG**：内部 SOC 调压设备
+    * **REGULATOR_FLG_LOCK**：是否需要锁（I2C 的设备都是需要的，内部调压的需要看场景和应用）
+* **desc.i2c_desc**：
+    * **flag**：支持下面几种配置
+        * **PWR_FLG_FIXED**：固定电压，不支持电压调整
+        * **PWR_FLG_ALWAYSON**：常开，不支持关闭输出
+        * **PWR_FLG_ENMASK**：使能位是否带有 mask（RK808、RK818 没有 MASK 功能，RK816、RK805、RK817、RK809 都有 MASK 功能）
+    * **info**：ePWR_ID，各路regulator对应的pwrId，用于 desc 结构的获取
+* **i2c8.name**：i2c0\i2c1...用于 i2c 的 device 的获取
+* **i2c8.i2cAddr**：i2c 地址
+* **PWR_DESC_I2C8_SHIFT_RUN**：运行电压配置（寄存器，偏移）
+* **PWR_DESC_I2C8_SHIFT_SSPD**：休眠电压配置（寄存器，偏移）
+* **PWR_DESC_I2C8_SHIFT_EN**：使能输出(寄存器, 偏移)
+* **voltMask**：电压 mask
+* **PWR_DESC_LINEAR_VOLT**：电压设置步进(最小电压, 最大电压, 步进值)
+* **desc.intreg_desc**：(同 i2c_desc 类似)：
+    * **PWR_INTREG_SHIFT_RUN**：运行电压配置（寄存器，偏移）
+    * **PWR_INTREG_SHIFT_SSPD**：休眠电压配置（寄存器，偏移）
 
-**init 参数详解**：
+2. **init 参数详解**
 
 ```c
-REGULATOR_INIT("vdd_npu", PWR_ID_DSP_CORE, 875000， 875000， 1),
+DUMP_REGULATOR("vdd_npu", PWR_ID_DSP_CORE, 875000),
 ```
 
 vdd_npu： 电源 name, 只是为了打印
 PWR_ID_DSP_CORE ： ePWR_ID pwrId，用于 desc 结构的获取
 875000： init 电压，如果设置 0，不会在初始化的时候设置此路电压
-875000： 休眠 电压，如果设置 0，不会在初始化的时候设置此路电压
-1： 休眠使能状态，0：休眠disable output，1：休眠enable_output
 
 ### 2.4 示例
 
