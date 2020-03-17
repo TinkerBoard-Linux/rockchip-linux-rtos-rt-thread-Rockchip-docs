@@ -2,6 +2,10 @@
 
 ---
 
+## Version 1.0.1 (2020-03-17)
+
+- Support utf-8 encoding for ID of TOC
+
 ## Version 1.0.0 (2020-03-13)
 
 - Add Rockchip_Developer_Guide_RT-Thread_RK816_CN.md

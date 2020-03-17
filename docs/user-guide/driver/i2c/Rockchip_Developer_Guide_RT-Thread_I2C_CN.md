@@ -1,10 +1,10 @@
 # Rockchip RT-Thread I2C开发向导
 
-发布版本：1.0.0
+发布版本：1.0.1
 
 作者邮箱：<avid.wu@rock-chips.com>
 
-日期：2020.02
+日期：2020.03
 
 文件密级：公开资料
 
@@ -31,6 +31,7 @@
 | **日期**   | **版本** | **作者** | **修改说明** |
 | ---------- | -------- | -------- | ------------ |
 | 2020-02-18 | V1.0.0   | 吴达超   | 初始版本     |
+| 2020-03-17 | V1.0.1   | 陈谋春   | 修正链接     |
 
 ---
 
@@ -53,7 +54,7 @@ RT_USING_I2C2 [=y]
 
 ## 板级配置
 
-RK2108 和 Pisces 的 I2C 的 IO 都是复用的，所以需要确保 IOMUX 的配置中相关的 IO 切到 I2C 模式，具体参见[开发指南](../../../../quick-start/Rockchip_Developer_Guide_RT-Thread/Rockchip_Developer_Guide_RT-Thread_CN/#44)中的IOMUX章节。
+RK2108 和 Pisces 的 I2C 的 IO 都是复用的，所以需要确保 IOMUX 的配置中相关的 IO 切到 I2C 模式，具体参见[开发指南](../../../quick-start/Rockchip_Developer_Guide_RT-Thread/Rockchip_Developer_Guide_RT-Thread_CN.html#443-iomux)中的IOMUX章节。
 
 ## 开发指南
 

@@ -21,6 +21,59 @@ $ ls -l
 drwxrwxr-x  5 cmc cmc 4096 Mar  3 10:42 Rockchip-docs
 ```
 
+## 替换ID策略
+
+   mkdocs 是调用 python-markdown 来把源文件转成 HTML 文档的，其 ID 生成策略和 typora 不太一样，不支持中文，这就导致只有中文的 header 生成的 ID 变成 ‘_x' 这样的格式（其中 x 是递增的数字），这就给跳转带来麻烦，所以我们加了一个中文支持，具体修改方法如下：
+
+```shell
+# 修改 ～/.local/lib/python3.6/site-packages/markdown/extensions/toc.py
+diff --git a/markdown/extensions/toc.py b/markdown/extensions/toc.py
+index 8f2b13f..5541e58 100644
+--- a/markdown/extensions/toc.py
++++ b/markdown/extensions/toc.py
+@@ -21,6 +21,10 @@ import re
+ import unicodedata
+ import xml.etree.ElementTree as etree
+
++def origin(value, separator):
++    """ Using the origin text, to make it URL friendly. """
++    value = re.sub(r'[^\w\s-]', '', value).strip().lower()
++    return re.sub(r'[%s\s]+' % separator, separator, value)
+
+ def slugify(value, separator):
+     """ Slugify a string, to make it URL friendly. """
+@@ -137,7 +141,10 @@ class TocTreeprocessor(Treeprocessor):
+         self.marker = config["marker"]
+         self.title = config["title"]
+         self.base_level = int(config["baselevel"]) - 1
+-        self.slugify = config["slugify"]
++        if isinstance(config["slugify"], str):
++            self.slugify = eval(config["slugify"])
++        else:
++            self.slugify = config["slugify"]
+         self.sep = config["separator"]
+         self.use_anchors = parseBoolValue(config["anchorlink"])
+         self.anchorlink_class = config["anchorlink_class"]
+```
+
+   需要注意的是，虽然支持中文，但是 URL 本身是不支持一些特殊字符，如：'.'、'\n' 等，所以最终你的 header 到 ID 还是有一个转换的过程，规则如下：
+
+- Step1：除了字母、数字、下划线、连接符和空格，其他全部删掉
+
+- Step2：转成小写
+
+- Step3：所有的空格都被替换成 '-'，注意多个连续空格会被替换成一个
+
+下面是几个具体例子：
+
+| Header             | ID          |
+| ------------------ | ----------- |
+| 1. 标题1           | 1-1         |
+| 1. header1 标题1   | 1-header1-1 |
+| 1.1.1 Header1 标题 | 111-header1 |
+
+   要跳转到其他章节就需要了解这种转换关系，引用的时候按正确的 ID 填写，例如你要跳转到同一个文档中标题为：'1.1.1 Header1 标题' 的章节，就需要用：'#111-header1' 来引用。最后生成 HTML 文档时，请检查每个跳转的是否有效。
+
 ## 生成
 
 ```shell
