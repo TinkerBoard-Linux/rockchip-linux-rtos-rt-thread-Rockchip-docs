@@ -21,7 +21,7 @@ nav:
             - Audio: user-guide/driver/audio/Rockchip_Developer_Guide_RT-Thread_Audio_CN.md
             - Clock: user-guide/driver/clock/Rockchip_Developer_Guide_RTOS_Clock_CN.md
             - Display: user-guide/driver/display/Rockchip_Developer_Guide_RT-Thread_Display_CN.md
-            - DSP: user-guide/driver/dsp/Rockchip_Developer_Guide_RT-Thread_DSP_CN.md
+            - DSP: user-guide/driver/dsp/Rockchip_Developer_Guide_RTOS_DSP_CN.md
             - DVFS: user-guide/driver/dvfs/Rockchip_Developer_Guide_RT-Thread_DVFS_CN.md
             - I2C: user-guide/driver/i2c/Rockchip_Developer_Guide_RT-Thread_I2C_CN.md
             - KEYCTRL: user-guide/driver/keyctrl/Rockchip_Developer_Guide_RT-Thread_KEYCTRL_CN.md

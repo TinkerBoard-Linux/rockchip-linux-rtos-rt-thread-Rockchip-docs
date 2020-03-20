@@ -2,6 +2,10 @@
 
 ---
 
+## Version 1.0.2 (2020-03-20)
+
+- Update Rockchip_Developer_Guide_RTOS_DSP_CN.md to 1.5.0
+
 ## Version 1.0.1 (2020-03-17)
 
 - Support utf-8 encoding for ID of TOC
