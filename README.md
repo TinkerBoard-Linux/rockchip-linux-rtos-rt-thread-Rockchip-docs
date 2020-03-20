@@ -26,7 +26,7 @@ drwxrwxr-x  5 cmc cmc 4096 Mar  3 10:42 Rockchip-docs
    mkdocs 是调用 python-markdown 来把源文件转成 HTML 文档的，其 ID 生成策略和 typora 不太一样，不支持中文，这就导致只有中文的 header 生成的 ID 变成 ‘_x' 这样的格式（其中 x 是递增的数字），这就给跳转带来麻烦，所以我们加了一个中文支持，具体修改方法如下：
 
 ```shell
-# 修改 ～/.local/lib/python3.6/site-packages/markdown/extensions/toc.py
+# 修改 ～/.local/lib/python2.7/site-packages/markdown/extensions/toc.py
 diff --git a/markdown/extensions/toc.py b/markdown/extensions/toc.py
 index 8f2b13f..5541e58 100644
 --- a/markdown/extensions/toc.py
@@ -47,10 +47,10 @@ index 8f2b13f..5541e58 100644
          self.title = config["title"]
          self.base_level = int(config["baselevel"]) - 1
 -        self.slugify = config["slugify"]
-+        if isinstance(config["slugify"], str):
-+            self.slugify = eval(config["slugify"])
-+        else:
++        if callable(config["slugify"]):
 +            self.slugify = config["slugify"]
++        else:
++            self.slugify = eval(config["slugify"])
          self.sep = config["separator"]
          self.use_anchors = parseBoolValue(config["anchorlink"])
          self.anchorlink_class = config["anchorlink_class"]
