@@ -49,7 +49,7 @@ nav:
         - Display: missing.md
         - DSP: missing.md
         - I2C: missing.md
-        - OS: faq/os/Rockchip_Developer_FAQ_RT-Thread_OS.md
+        - OS: faq/os/Rockchip_Developer_FAQ_RT-Thread_OS_CN.md
         - Power Manager: missing.md
         - SDIO: missing.md
         - SPI: missing.md
