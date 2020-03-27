@@ -1,10 +1,10 @@
-# **Rockchip Developer Guide** Application Demo
+# **Rockchip Developer Guide ASR Demo**
 
-发布版本：1.0.0
+发布版本：1.0.1
 
 作者邮箱：chad.ma@rock-chips.com
 
-日期：2019.09
+日期：2020.03.30
 
 文件密级：公开资料
 
@@ -28,7 +28,8 @@
 
 | **日期**   | **版本** | **作者** | **修改说明** |
 | ---------- | -------- | -------- | ------------ |
-| 2019-09-06 | V1.0.0   | chad.ma  | 初始发布     |
+| 2019-09-06 | V1.0.0   | 马龙昌   | 初始发布     |
+| 2020-03-30 | V1.0.1   | 马龙昌   | 更新第2章节  |
 
 <div style="page-break-after: always;"></div>
 ## 目录
@@ -42,7 +43,6 @@
 
 通过本文介绍的应用实例，开发者可了解并掌握关于Rockchip RT-Thread开发平台的基于语音唤醒功能、带显示的应用使用功能，以便参考。
 
-<div style="page-break-after: always;"></div>
 ## 2 ASR应用实例
 
 ### 2.1 代码路径
@@ -69,18 +69,7 @@ bsp/rockchip/rk2108/Image/ext_rkdsp.bin
 
 使用bsp/rockchip/rk2108/dsp_fw/rkdsp_fw_speech.h替换bsp/rockchip/rk2108/dsp_fw/rkdsp_fw.h，并保持使用rkdsp_fw.h名称不变。
 
-#### 2.2.2 修改board.h
-
-由于思必驰固件较大，需要使用部分SRAM，因此将CPU可用内存缩小，修改bsp/rockchip/rk2108/board/<EVB board >[^1]/board.h：
-
-```c
-- #define RK_SRAM_END             0x20100000
-+ #define RK_SRAM_END             0x200E0000
-```
-
-注[^1]:<EVB board>这里根据具体使用的EVB板型修改对应的目录
-
-#### 2.2.3 替换setting.ini
+#### 2.2.2 替换setting.ini
 
 使用bsp/rockchip/rk2108/Image/setting_speech.ini替换bsp/rockchip/rk2108/Image/setting.ini，并保持setting.ini名称不变。
 
@@ -90,13 +79,14 @@ bsp/rockchip/rk2108目录下，执行scons --menuconfig
 
 - 开启DSP配置
 
-```
-> RT-Thread rockchip rk2108 drivers > Enable DSP >
-[*] Enable DSP
-[*]   Enable firmware loader to dsp
-        Dsp firmware path (Store firmware data in builtin)  --->
-[ ]   Enable dsp send trace to cm4
-(0)   Config dsp debug uart port
+```bash
+> RT-Thread rockchip rk2108 drivers >
+	Enable DSP >
+        [*] Enable DSP
+        [*]   Enable firmware loader to dsp #使能将固件加载到dsp
+        	Dsp firmware path (Store firmware data in builtin)  --->
+        [ ]   Enable dsp send trace to cm4
+        (0)   Config dsp debug uart port
 ```
 
 这里dsp debug uart的port配置根据实际使用中调试串口端口保持一致。
@@ -105,185 +95,75 @@ bsp/rockchip/rk2108目录下，执行scons --menuconfig
 
 - 开启codec（即其中标注**的项，下同）
 
-```
-> RT-Thread rockchip rk2108 drivers > Enable Audio > Enable Audio Card >
+```bash
+> RT-Thread rockchip rk2108 drivers > Enable Audio > Audio Card >
 [*] Audio Cards
-[ ]   Enable internal adc audio card
-[ ]   Enable digital mic audio card
-[ ]   Enable audio pwm audio card
-[*]   Enable es8388 audio card    **
+[ ]   Enable Internal ADC audio card
+[ ]   Enable AUDIOPWM audio card
+[ ]   Enable I2S Ditigal Mic audio card
+[*]   Enable PDM Digital Mic audio card     #选择PDM MIC
+[ ]   Enable Everest Semi ES7243 audio card
+[*]   Enable Everest Semi ES8311 audio card #选择es8311 声卡
+[ ]   Enable Everest Semi ES8388 audio card
+[ ]   Enable mix audio card with Interal ADC + ES8311
+[ ]   Enable mix audio card with PDM Mics + ES8388
 ```
 
-~~~
-> RT-Thread rockchip rk2108 drivers > Enable Audio >
-[*] Enable PCM
-[ ] Enable AUDIOPWM
-[*] Enable I2STDM       **
-[ ]   Enable I2STDM0
-[*]   Enable I2STDM1    **
-[ ] Enable PDM
-[*] Enable VAD
-        VAD irq handler (handled by DSP)  --->
-    Enable Audio Card  --->
-    Enable Codec  --->
-~~~
+根据硬件具体情况选择使能声卡。
 
-- 开启app
+- 开启APP
 
-```
+```bash
 > RT-Thread application
-[*] rk iot app
-[*]   system info save to flash
-[ ]   network and wlan enable
-Select asr wake up mode (use speech wake up words)  --->
-[ ]   dsp get data through vad path
+    [*] rk iot app
+    [*]   system info save to flash
+    [*]   boot app automatically
+    [ ]   network and wlan enable
+    [ ]   Enable aispeech
+          Select asr wake up mode (use speech wake up words)  ---> #使用思必驰唤醒词
+    (es8311p) Playback sound card	#播放声卡设置
+    (pdmc) ASR sound card
+    [ ]   dsp get data through vad path
+    [ ] Enable dual-tracking
+    [ ] Recording pen app
 ```
 
 - 开启mp3解码器
 
-```
-> RT-Thread Components > Audio Plugin >
-[*] Enable mp3 decoder
-[ ] Enable speex encoder
-[ ] Enable amr codec
-[ ] Enable player test
-```
-
-- 开启AMIC
-
-```
-> RT-Thread rockchip rk2108 drivers > Enable Audio > Enable Audio Card >
-[*] Audio Cards
-[*]   Enable internal adc audio card    **
-[ ]   Enable digital mic audio card
-[ ]   Enable audio pwm audio card
-[*]   Enable es8388 audio card
-```
-
-```
-> RT-Thread rockchip rk2108 drivers > Enable Audio >
-[*] Enable PCM
-[ ] Enable AUDIOPWM
-[*] Enable I2STDM
-[*]   Enable I2STDM0    **
-[*]   Enable I2STDM1
-[ ] Enable PDM
-[*] Enable VAD
-        VAD irq handler (handled by DSP)  --->
-    Enable Audio Card  --->
-    Enable Codec  --->
+```bash
+> RT-Thread third party package
+[*] Audio server  --->
+    --- Audio server
+        Compile type (Use source code)  --->  #选择使用源码
+    [*]   Enable player						  #使能播放器
+    [ ]     Enable player test
+    [ ]   Enable recorder
+    [*]   Enable encode and decode  --->      #使能编解码功能
+            --- Enable encode and decode
+               Codec run on (CM4)  --->
+            [*]   Enable mp3 decode			  #使能mp3解码
+            [ ]   Enable amr decode
+            [ ]   Enable amr encode
+            [ ]   Enable speex encode
+            [ ]   Enable opus encode
+    -*-   Enable audio plugins  --->
 ```
 
-- 开启PDM MIC（与AMIC二选一配置即可）
+- 由于思必驰固件较大，需要使用部分SRAM，因此将CPU可用内存SRAM缩小。
 
-```
-> RT-Thread rockchip rk2108 drivers > Enable Audio > Enable Audio Card >
-[*] Audio Cards
-[ ]   Enable internal adc audio card
-[*]   Enable digital mic audio card    **
-        mic type (Enable pdm mic audio card)  --->  **
-[ ]   Enable audio pwm audio card
-[*]   Enable es8388 audio card
+```bash
+> RT-Thread board config  --->
+    (audio_demo_rk2108_v11) the board name of you use #同board目录下定义的板型名称
+    (0x200E0000) the address of sram end #调整SRAM的结束地址到0x200E0000,默认为0x20100000
+    [ ] Enable Cortex M4 JTAG
+    [ ] Enable DSP JTAG
 ```
 
-```
-> RT-Thread rockchip rk2108 drivers > Enable Audio >
-[*] Enable PCM
-[ ] Enable AUDIOPWM
-[*] Enable I2STDM
-[ ]   Enable I2STDM0
-[*]   Enable I2STDM1
--*- Enable PDM       **
-[*]   Enable PDM0    **
-[*] Enable VAD
-        VAD irq handler (handled by DSP)  --->
-    Enable Audio Card  --->
-    Enable Codec  --->
-```
-
-- 关闭VOP、RGB
-
-~~~
-> RT-Thread rockchip rk2108 drivers >
-[*] Enable CRU
--*- Enable General DMA Framework
-[*]   Enable PL330 DMA Controller
-[*] Enable PMU
-[ ] Enable RGB    **
-[ ] Enable VOP    **
-[ ] Enable MIPI DSI
-[ ] Enable KEYCTRL
-[*] Enable PWM0
-    Enable DSP  --->
-    Enable UART  --->
-    Enable I2C  --->
-    Enable SPI  --->
-    Enable Audio  --->
-[ ] Enable SYSTICK
-~~~
-
-### 2.4 配置唤醒通路
-
-#### 2.4.1 使用VAD通路
-
-VAD通路与CM4通路区别在于DSP直接从VAD获取数据，CM4仅做配置，无法获取到数据。需要使用CM4通路请直接参考 [2.4.2 使用CM4通路](# 2.4.2 使用CM4通路)。
-
-##### 2.4.1.1 应用配置ASR通路
-
-应用配置中打开vad path
-
-```
-> RT-Thread application
-[*] rk iot app
-[*]   dsp get data through vad path        **
-```
-
-##### 2.4.1.2  开启声卡VAD功能
-
-```
-> RT-Thread rockchip rk2108 drivers > Enable Audio >
-[*] Enable PCM
-[*] Enable VAD        **
-        VAD irq handler (handled by DSP)  --->
-    Enable Audio Card  --->
-    Enable Codec  --->
-```
-
-#### 2.4.2 使用CM4通路
-
-##### 2.4.2.1 应用配置ASR通路
-
-关闭application中dsp get data through vad path配置。
-
-```
-> RT-Thread application
-[*] rk iot app
-[ ]   dsp get data through vad path             **
-```
-
-##### 2.4.2.2 关闭声卡VAD功能
-
-关闭VAD配置
-
-```
-> RT-Thread rockchip rk2108 drivers > Enable Audio >
-[*] Enable PCM
-[ ] Enable AUDIOPWM
-[*] Enable I2STDM
-[ ]   Enable I2STDM0
-[*]   Enable I2STDM1
--*- Enable PDM
-[*]   Enable PDM0
-[ ] Enable VAD    **
-    Enable Audio Card  --->
-    Enable Codec  --->
-```
-
-### 2.5 声卡接口说明
+### 2.4 声卡接口说明
 
 声卡接口具体实现在`bsp/rockchip/common/drivers/audio/rk_audio.c`，使用示例可参考`bsp/rockchip/common/tests/tinyplay.c`和`bsp/rockchip/common/tests/tinycap.c`。
 
-#### 2.5.1 接口说明
+#### 2.4.1 接口说明
 
 rk_audio.c文件内接口不能直接调用，而是通过RT-Thread Audio设备框架进行调用，相关接口有：
 
@@ -298,7 +178,7 @@ rk_audio.c文件内接口不能直接调用，而是通过RT-Thread Audio设备�
 
 接口详细说明请查看RT-Thread官方文档 [Audio设备篇](https://www.rt-thread.org/document/site/programming-manual/device/audio/audio/)。
 
-#### 2.5.2 注意事项
+#### 2.4.2 注意事项
 
 音频读写所需环形内存由调用者维护，即需要调用者申请内存，并在使用结束后释放，申请或释放需要使用`rt_malloc_uncache`和`rt_free_uncache`接口，使用其他接口申请的内存可能会因为读写速度的影响导致声音卡顿。
 
@@ -338,7 +218,7 @@ Location:
 
 具体配置如上图所示：使用MCU屏，配置成宽高240*240像素，8bit色深。
 
-![](./Rockchip_Developer_Guide_RT-Thread_Application_Demo_CN/lvgl_config.png)
+![](./Rockchip_Developer_Guide_RT-Thread_ASR_Demo_CN/lvgl_config.png)
 
 按照以下配置，选择240x320 MCU屏幕:
 
@@ -350,7 +230,7 @@ Location:
 
 需先配置RGB与VOP相关驱动。
 
-![](./Rockchip_Developer_Guide_RT-Thread_Application_Demo_CN/pannel_config.png)
+![](./Rockchip_Developer_Guide_RT-Thread_ASR_Demo_CN/pannel_config.png)
 
 - **相关驱动配置**：
 
@@ -359,7 +239,6 @@ Location:
     [*] Enable RGB
     [*] Enable VOP
 ```
-
 
 因io复用的关系，若使用显示功能需关闭codec相关的配置。
 
@@ -413,29 +292,43 @@ RT-Thread 开机启动应用的代码在applications/start_app/application.c中�
 <div style="page-break-after: always;"></div>
 ## 4 文件系统打包
 
-将脚本mkroot.sh放至bsp/rockchip/rk2108目录下，执行./mkroot.sh，即会在Image目录下生产root.img文件。
+bsp/rockchip/rk2108目录下，执行./mkroot.sh，即会在Image目录下生产root.img文件。
 
-该脚本将bsp/rockchip/rk2108/resource/userdata目录下的文件或目录制作成Fat12格式的文件系统，大小为setting.ini中设定的Flash Totalsize 减去root字段的偏移地址。
+该脚本将bsp/rockchip/rk2108/resource/userdata目录下的文件或目录制作成Fat12格式的文件系统，大小为setting.ini中设定的root分区 PartSize的大小。
 
 <div style="page-break-after: always;"></div>
-## 5 固件烧录
+## 5 固件编译与生成
+
+bsp/rockchip/rk2108目录下执行
+
+```
+./build.sh
+```
+
+编译无误后，固件将自动调用./mkimage.sh生成固件。
+
+固件路径在当前Image/Firmware.img。
+
+## 6 固件烧录
 
 | 地址       | 名称        | 文件                       |
 | ---------- | ----------- | -------------------------- |
 | 0x00000000 | LoaderToDDR | Image/rk2108_db_loader.bin |
 | 0x00000000 | firmware    | Image/Firmware.img         |
-| 0x00001100 | root        | Image/root.img             |
+| 0x0000xxxx | root        | Image/root.img             |
 
-注：文件系统仅需烧写一次，后续可以只烧写loader和Firmware。
+注：0x0000xxxx 为root分区的在setting.ini中设置的PartOffset偏移地址。
+
+​       文件系统仅需烧写一次，后续可以只烧写loader和Firmware。
 
 ​       root.img 在Display实例中可不烧录。
 
 <div style="page-break-after: always;"></div>
-## 6 运行测试
+## 7 运行测试
 
 固件烧录成功，运行启动，对着EVB板说出如下命令词：（思必驰固件）
 
-```
+```bash
 "xiao you xiao you" ,
 "da kai re shui qi" ,
 "guan bi re shui qi" ,
@@ -459,25 +352,28 @@ RT-Thread 开机启动应用的代码在applications/start_app/application.c中�
 
 在显示应用实例中，在MCU显示屏上显示如下内容的应答字符。
 
-    "我在/在的/请吩咐/您请说" (随机出现)
-    "已为您打开热水器",
-    "已为您关闭热水器",
-    "已为您调高温度",
-    "已为您调低温度",
-    "已为您调至45°",
-    "已为您调至65°",
-    "已为您调至75°",
-    "已为您打开抑菌",
-    "已为您关闭抑菌",
-    "已为您打开晨浴",
-    "已为您关闭晨浴",
-    "已为您打开晚浴",
-    "已为您关闭晚浴",
-    "好的,已为您打开热水器",
-    "已为您打开速热补水",
-    "已为您关闭速热补水",
+```bash
+"我在/在的/请吩咐/您请说" (随机出现)
+"已为您打开热水器",
+"已为您关闭热水器",
+"已为您调高温度",
+"已为您调低温度",
+"已为您调至45°",
+"已为您调至65°",
+"已为您调至75°",
+"已为您打开抑菌",
+"已为您关闭抑菌",
+"已为您打开晨浴",
+"已为您关闭晨浴",
+"已为您打开晚浴",
+"已为您关闭晚浴",
+"好的,已为您打开热水器",
+"已为您打开速热补水",
+"已为您关闭速热补水",
+```
+
 <div style="page-break-after: always;"></div>
-## 7 参考文档
+## 8 参考文档
 
 1. [Rockchip_Developer_Guide_RT-Thread_Display_CN.md](../driver/display/Rockchip_Developer_Guide_RT-Thread_Display_CN.md)
 2. [Rockchip_Developer_Guide_RT-Thread_Display_APP_CN.md](./Rockchip_Developer_Guide_RT-Thread_Display_APP_CN.md)

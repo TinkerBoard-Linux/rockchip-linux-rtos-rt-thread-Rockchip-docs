@@ -13,8 +13,8 @@ nav:
     - Quick Start: quick-start/Rockchip_Developer_Guide_RT-Thread/Rockchip_Developer_Guide_RT-Thread_CN.md
     - User Guide:
         - Application:
-            - Audio and Display: user-guide/app/Rockchip_Developer_Guide_RT-Thread_Application_Demo_CN.md
-            - Recording Pen: user-guide/app/Rockchip_Developer_Guide_RT-Thread_Recording_Pen_DEMO_CN.md
+            - ASR Demo: user-guide/app/Rockchip_Developer_Guide_RT-Thread_ASR_Demo_CN.md
+            - Recording Pen Demo: user-guide/app/Rockchip_Developer_Guide_RT-Thread_Recording_Pen_DEMO_CN.md
             - Display: user-guide/app/Rockchip_Developer_Guide_RT-Thread_Display_APP_CN.md
             - OTA: user-guide/app/Rockchip_Developer_Guide_RT-Thread_OTA_CN.md
             - Ymodem: user-guide/app/Rockchip_Developer_Guide_RT-Thread_Ymodem_CN.md
