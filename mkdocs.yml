@@ -20,7 +20,9 @@ nav:
         - Driver:
             - Audio: user-guide/driver/audio/Rockchip_Developer_Guide_RT-Thread_Audio_CN.md
             - Clock: user-guide/driver/clock/Rockchip_Developer_Guide_RTOS_Clock_CN.md
-            - Display: user-guide/driver/display/Rockchip_Developer_Guide_RT-Thread_Display_CN.md
+            - Display:
+                - VOP: user-guide/driver/display/Rockchip_Developer_Guide_RT-Thread_Display_CN.md
+                - SPI Screen: user-guide/driver/display/Rockchip_Developer_Guide_RT-Thread_SPI_Screen_CN.md
             - DSP: user-guide/driver/dsp/Rockchip_Developer_Guide_RTOS_DSP_CN.md
             - DVFS: user-guide/driver/dvfs/Rockchip_Developer_Guide_RT-Thread_DVFS_CN.md
             - I2C: user-guide/driver/i2c/Rockchip_Developer_Guide_RT-Thread_I2C_CN.md
