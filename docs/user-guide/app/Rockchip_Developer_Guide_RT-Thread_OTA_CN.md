@@ -1,10 +1,10 @@
 # Rockchip RT-Thread OTA升级开发指南
 
-文件标识：RK-KF-YF-XXX
+文件标识：RK-KF-YF-354
 
-发布版本：V1.0.1
+发布版本：V1.1.0
 
-日期：2020-02-20
+日期：2020-03-31
 
 文件密级：□绝密   □秘密   □内部资料   ■公开
 
@@ -22,7 +22,7 @@
 
 本文档可能提及的其他所有注册商标或商标，由其各自拥有者所有。
 
-**版权所有** **© 2019** **福州瑞芯微电子股份有限公司**
+**版权所有** **© 2020 **福州瑞芯微电子股份有限公司**
 
 超越合理使用范畴，非经本公司书面许可，任何单位和个人不得擅自摘抄、复制本文档内容的部分或全部，并不得以任何形式传播。
 
@@ -42,7 +42,7 @@ Fuzhou Rockchip Electronics Co., Ltd.
 
 ---
 
-**前言**
+## 前言
 
 **概述**
 
@@ -67,8 +67,9 @@ Fuzhou Rockchip Electronics Co., Ltd.
 | ---------- | --------| :--------- | ------------ |
 | V1.0.0    | 马龙昌 | 2020-02-20 | 初始版本     |
 | V1.0.1 | 陈谋春 | 2020-03-05 | 调整“接口说明”的样式 |
+| V1.1.0 | 马龙昌 | 2020-03-31 | 更新2.2、2.3小节 |
 
-**目录**
+## 目录
 
 ---
 
@@ -155,7 +156,7 @@ OTA相关代码请参考：
 
 Path_to_SDK/components/ota/
 
-```
+```bash
 .
 ├── Kconfig
 ├── link_queue.c
@@ -178,67 +179,121 @@ Path_to_SDK/components/ota/
 - 初始化 OTA 模块的私有全局参数结构体指针。根据当前正在运行的系统固件信息初始化image分区的大小，当前正在运行的分区编号、以及需要升级的分区的起始地址。
 
 ```c
-   ota_status ota_init(void)
+ota_status ota_init(void)
 ```
 
 - 反初始化 OTA 模块。
 
 ```c
-   void ota_deinit(void)
+void ota_deinit(void)
 ```
 
 - 通过指定协议下载固件。输入参数 protocol 为所选择的下载固件的协议。输入参数 url 为固件统一资源定位符。下载成功，返回 OTA_STATUS_OK；下载失败，返回 OTA_STATUS_ERROR。
 
 ```c
-   ota_status ota_update_image(ota_protocol protocol, void *url)
+ota_status ota_update_image(ota_protocol protocol, void *url)
 ```
 
 - 通过指定算法校验下载的固件，输入参数 verify 为指定的校验算法。校验成功返回OTA_STATUS_OK；校验失败返回 OTA_STATUS_ERROR。
 
 ```c
-   ota_status ota_verify_img(ota_verify verify)
+ota_status ota_verify_img(ota_verify verify)
 ```
 
 - 重启系统。输入参数为升级的Fw slot 索引。
 
 ```c
-   void ota_reboot(int system_running)
+void ota_reboot(int system_running)
 ```
 
-- A/B slot 相关标志的数据初始化
+- 系统分区A/B slot数据的校验。
 
 ```c
-   void fw_ab_data_init(fw_ab_data *data)
+rt_bool_t fw_ab_data_verify(fw_ab_data *src, fw_ab_data *dest)
 ```
 
-- A/B slot 相关数据的写入，将AB系统启动相关数据写入AB_DATA_PART_OFFSET指定的vendor区域。
+- 系统分区A/B slot 相关标志的数据初始化。
 
 ```c
-   int fw_ab_data_write(const fw_ab_data *data)
+void fw_ab_data_init(fw_ab_data *data)
 ```
 
-- 判断A/B slot是否为可启动状态
+- 系统分区A/B slot 相关数据的写入，将AB系统启动相关数据写入AB_DATA_PART_OFFSET指定的Flash区域。
 
 ```c
-   rt_bool_t fw_slot_is_bootable(fw_ab_slot_data *slot)
+int fw_ab_data_write(const fw_ab_data *data)
 ```
 
-- 读取A/B slot 相关数据。将AB系统启动相关数据从AB_DATA_PART_OFFSET指定的vendor区域读入到指定数据结构中。
+- 判断系统分区A/B slot是否为可启动状态。
 
 ```c
-   int fw_ab_data_read(fw_ab_data *data)
+rt_bool_t fw_slot_is_bootable(fw_ab_slot_data *slot)
 ```
 
-- 根据指定的Fw slot 索引设置Fw slot的标志为激活态。
+- 读取系统分区A/B slot 相关数据。将AB系统启动相关数据从AB_DATA_PART_OFFSET指定的Flash区域读入到指定数据结构中。
 
 ```c
-    int fw_slot_set_activity(uint32_t slot)
+int fw_ab_data_read(fw_ab_data *data)
 ```
 
-- 获取当前正在运行的系统是哪个slot
+- 根据指定的系统分区Fw slot 索引设置Fw slot的标志为挂起态。
 
 ```c
-    int fw_slot_get_current_running(uint32_t* cur_slot)
+int fw_slot_set_pending(uint32_t slot)
+```
+
+- 根据指定的系统分区Fw slot 索引设置Fw slot的标志为激活态。
+
+```c
+int fw_slot_set_active(uint32_t slot)
+```
+
+- 获取当前正在运行的系统分区是哪个slot。
+
+```c
+int fw_slot_get_current_running(uint32_t* cur_slot)
+```
+
+- 用户分区A/B slot 相关标志的数据初始化。
+
+```c
+void user_ab_data_init(user_ab_data *data)
+```
+
+- 用户分区A/B slot数据的校验。
+
+```c
+rt_bool_t user_ab_data_verify(user_ab_data *src, user_ab_data *dest)
+```
+
+- 用户分区数据的写入，将AB用户启动相关数据写入USER_AB_DATA_OFFSET指定的Flash区域。
+
+```c
+int user_ab_data_write(const user_ab_data *data)
+```
+
+- 判断用户分区A/B slot是否为可启动状态。
+
+```c
+rt_bool_t user_slot_is_bootable(user_ab_slot_data *slot)
+```
+
+- 读取用户分区A/B slot 相关数据。将AB系统使用的相关数据从USER_AB_DATA_OFFSET指定的Flash区域读入到指定数据结构中。
+
+```c
+int user_ab_data_read(user_ab_data *data)
+```
+
+- 根据指定的用户分区slot 索引设置该 slot分区的标志为挂起态。
+
+```c
+int user_slot_set_pending(uint32_t slot)
+```
+
+- 根据指定的用户分区 slot 索引设置该slot分区的标志为激活态。
+
+```c
+int user_slot_set_active(uint32_t slot)
 ```
 
 ### 2.3 使用示例
@@ -251,10 +306,12 @@ Path_to_SDK/components/ota/
 
 OTA相关配置：
 
-```
+```bash
 -> RT-Thread Components
     [*] Enable Ota upgrade
     [*]   Enable ota upgrade from loacl file
+    [ ]   Enable ota upgrade from http server
+    [ ]   Enable support root A/B partition #若支持用户分区AB升级，打开该项配置
 -*- Enable firmware analysis
 ```
 
@@ -268,12 +325,13 @@ OTA相关配置：
 
 OTA相关配置：
 
-```
+```bash
 -> RT-Thread Components
     [*] Enable http
     [*] Enable Ota upgrade
     [ ]   Enable ota upgrade from loacl file
     [*]   Enable ota upgrade from http server
+    [ ]   Enable support root A/B partition #若支持用户分区AB升级，打开该项配置
     (http://172.16.21.157/rk2108-Firmware.img) Url of firmware from http server
 -*- Enable firmware analysis
 ```
@@ -300,7 +358,7 @@ cd Path_to_SDK/bsp/rockchip/rk2108
 
 若使用scons --menuconfig过程中遇到如下问题：
 
-```
+```bash
 scons --menuconfig
 scons: Reading SConscript files ...
 ImportError: No module named configparser:
@@ -311,7 +369,7 @@ ImportError: No module named configparser:
 
 请执行一下命令，安装python-configparser包
 
-```
+```shell
 sudo apt-get install python-configparser
 ```
 

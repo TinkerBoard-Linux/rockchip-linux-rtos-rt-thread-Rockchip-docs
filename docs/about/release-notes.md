@@ -1,6 +1,10 @@
 # Release Notes
 
 ---
+## Version 1.2.2 (2020-03-31)
+
+- Update Rockchip_Developer_Guide_RT-Thread_OTA_CN.md
+
 ## Version 1.2.1 (2020-03-30)
 
 - Update Rockchip_Developer_Guide_RT-Thread_ASR_Demo_CN.md
