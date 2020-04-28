@@ -2,9 +2,9 @@
 
 文件标识：RK-KF-YF-342
 
-发布版本：V1.2.0
+发布版本：V1.3.0
 
-日期：2020-05-08
+日期：2020-05-13
 
 文件密级：□绝密   □秘密   □内部资料   ■公开
 
@@ -68,6 +68,7 @@ Fuzhou Rockchip Electronics Co., Ltd.
 | V1.0.0    | 郑永智 | 2019-09-20 | 初始版本     |
 | V1.1.0    | 郑永智 | 2019-03-09 | 文档格式整理     |
 | V1.2.0 | 钟勇汪 | 2020-05-08 | 修改编译命令 |
+| V1.3.0    | 郑永智 | 2019-05-13 | 同步代码更新配置   |
 
 **目录**
 
@@ -75,30 +76,102 @@ Fuzhou Rockchip Electronics Co., Ltd.
 [TOC]
 ---
 
-## 1 基于 720x1280 屏幕的clock demo用例
+## 1 clock_demo显示用例
+
+clock_demo显示用例是在RK2108B_EVB + ST7703_DS(720x1280) Pannel硬件环境下，运行一个时钟界面的显示参考用例。
 
 ### 1.1 代码路径
-
-基于 720x1280 屏幕的clock demo用例代码路径为：
 
 ```shell
 .
 ├── applications
-    └── clock
+    └── clock_demo
 ```
 
-### 1.2 工程配置
+### 1.2 编译配置
 
-通过以下简单配置开启该用例的配置。
-
-1）进入工程目录，执行menuconfig命令
+进入工程目录，执行menuconfig命令，开始进行该用例的编译配置：
 
 ```shell
 usr@host:~/rt-thread$ cd bsp/rockchip/rk2108/
 usr@host:~/rt-thread/bsp/rockchip/rk2108$ scons --menuconfig
 ```
 
-2）LittlevGL组件的配置
+1）Board配置
+
+```shell
+Location:
+    -> RT-Thread board config
+```
+
+![1-2-1-720_1280_cloc_demo_board_config.png](Rockchip_Developer_Guide_RT-Thread_Display_APP/1-2-1-720_1280_clock_demo_board_config.png)
+
+2）显示配置
+
+使能显示功能：
+
+```shell
+Location:
+    -> RT-Thread rockchip rk2108 drivers
+```
+
+![1-2-2-720_1280_clock_demo_display_enable.png](Rockchip_Developer_Guide_RT-Thread_Display_APP/1-2-2-720_1280_clock_demo_display_enable.png)
+
+显示接口选择：
+
+```shell
+Location:
+    -> RT-Thread rockchip rk2108 drivers
+         -> Enable Display (RT_USING_DISPLAY [=y])
+            -> Display Controller (<choice> [=y])
+```
+
+![1-2-3-720_1280_clock_demo_pannel_if_config.png](Rockchip_Developer_Guide_RT-Thread_Display_APP/1-2-3-720_1280_clock_demo_pannel_if_config.png)
+
+显示类型选择：
+
+```shell
+Location:
+    -> RT-Thread rockchip rk2108 drivers
+         -> Display Interface (<choice> [=y])
+```
+
+![1-2-4-720_1280_clock_demo_pannel_type_config.png](Rockchip_Developer_Guide_RT-Thread_Display_APP/1-2-4-720_1280_clock_demo_pannel_type_config.png)
+
+显示屏幕驱动选择：
+
+```shell
+Location:
+    -> RT-Thread rockchip common drivers
+        -> Panel Type (<choice> [=y])
+```
+
+![1-2-5-720_1280_clock_demo_pannel_driver_config.png](Rockchip_Developer_Guide_RT-Thread_Display_APP/1-2-5-720_1280_clock_demo_pannel_driver_config.png)
+
+3）Touch配置（可选）
+
+使能touch：
+
+```shell
+Location:
+    -> RT-Thread Components
+        -> Device Drivers
+```
+
+![1-2-6-720_1280_clock_demo_touch_config.png](Rockchip_Developer_Guide_RT-Thread_Display_APP/1-2-6-720_1280_clock_demo_touch_config.png)
+
+选择touch驱动：
+
+```shell
+Location:
+    -> RT-Thread rockchip common drivers
+```
+
+![1-2-7-720_1280_clock_demo_touch_driver_config.png](Rockchip_Developer_Guide_RT-Thread_Display_APP/1-2-7-720_1280_clock_demo_touch_driver_config.png)
+
+![1-2-8-720_1280_clock_demo_touch_driver_config.png](Rockchip_Developer_Guide_RT-Thread_Display_APP/1-2-8-720_1280_clock_demo_touch_driver_config.png)
+
+4）LittlevGL组件的配置
 
 ```shell
 Location:
@@ -108,31 +181,7 @@ Location:
             -> LittlevGL2RTT Component Options
 ```
 
-按照以下信息配置LittlevGL GUI:
-
-![2-2-1-720_1280_clock_demo_lvgl_config.png](Rockchip_Developer_Guide_RT-Thread_Display_APP/2-2-1-720_1280_clock_demo_lvgl_config.png)
-
-3）开发板配置
-
-```shell
-Location:
-    -> RT-Thread board config
-```
-
-按照以下信息选择开发板配置：
-
-![2-2-2-720_1280_clock_demo_board_config.png](Rockchip_Developer_Guide_RT-Thread_Display_APP/2-2-2-720_1280_clock_demo_board_config.png)
-
-4）Pannel配置
-
-```shell
-Location:
-    -> RT-Thread rockchip common drivers
-```
-
-按照以下配置，选择720x1280屏幕：
-
-![2-2-3-720_1280_clock_demo_pannel_config.png](Rockchip_Developer_Guide_RT-Thread_Display_APP/2-2-3-720_1280_clock_demo_pannel_config.png)
+![1-2-9-720_1280_clock_demo_lvgl_config.png](Rockchip_Developer_Guide_RT-Thread_Display_APP/1-2-9-720_1280_clock_demo_lvgl_config.png)
 
 5）显示应用配置
 
@@ -141,25 +190,13 @@ Location:
     -> RT-Thread application
 ```
 
-按照以下配置，打开“clock demo enable”配置：
+![1-2-10-720_1280_clock_demo_app_config.png](Rockchip_Developer_Guide_RT-Thread_Display_APP/1-2-10-720_1280_clock_demo_app_config.png)
 
-![2-2-4-720_1280_clock_demo_app_config.png](Rockchip_Developer_Guide_RT-Thread_Display_APP/2-2-4-720_1280_clock_demo_app_config.png)
+## 2 RK_IoT_Display显示用例
 
-### 1.3 编译与执行
-
-配置完成之后，在工程目录下执行编译命令：
-
-```shell
-usr@host:~/rt-thread/bsp/rockchip/rk2108$ ./build.sh
-```
-
-编译完成之后将固件下载到开发板查看显示效果。
-
-## 2 基于 240x320 屏幕的RK_IoT_Display显示用例
+rk_iot_display显示用例是在RK2108_EVB + CTC_2.8'(240x320) Pannel硬件环境下，针对iot应用场景，运行一个AI对讲显示界面。
 
 ### 2.1 代码路径
-
-基于 240x320 屏幕的RK_IoT_Display用例代码路径为：
 
 ```shell
 .
@@ -167,19 +204,65 @@ usr@host:~/rt-thread/bsp/rockchip/rk2108$ ./build.sh
     └── rk_iot_display
 ```
 
-### 2.2 工程配置
-
-通过以下简单配置开启该用例的配置：
-
-1） 进入工程目录，执行menuconfig命令
+进入工程目录，执行menuconfig命令，开始进行该用例的编译配置：
 
 ```shell
 usr@host:~/rt-thread$ cd bsp/rockchip/rk2108/
 usr@host:~/rt-thread/bsp/rockchip/rk2108$ scons --menuconfig
-
 ```
 
-2）LittlevGL组件的配置
+1）Board配置
+
+```shell
+Location:
+    -> RT-Thread board config
+```
+
+![2-2-1-240_320_iot_display_board_config.png](Rockchip_Developer_Guide_RT-Thread_Display_APP/2-2-1-240_320_iot_display_board_config.png)
+
+2）显示配置
+
+使能显示功能：
+
+```shell
+Location:
+    -> RT-Thread rockchip rk2108 drivers
+```
+
+![1-2-2-720_1280_clock_demo_display_enable.png](Rockchip_Developer_Guide_RT-Thread_Display_APP/1-2-2-720_1280_clock_demo_display_enable.png)
+
+显示接口选择：
+
+```shell
+Location:
+    -> RT-Thread rockchip rk2108 drivers
+         -> Enable Display (RT_USING_DISPLAY [=y])
+            -> Display Controller (<choice> [=y])
+```
+
+![1-2-3-720_1280_clock_demo_pannel_if_config.png](Rockchip_Developer_Guide_RT-Thread_Display_APP/1-2-3-720_1280_clock_demo_pannel_if_config.png)
+
+显示类型选择：
+
+```shell
+Location:
+    -> RT-Thread rockchip rk2108 drivers
+         -> Display Interface (<choice> [=y])
+```
+
+![2-2-4-240_320_iot_display_pannel_type_config.png](Rockchip_Developer_Guide_RT-Thread_Display_APP/2-2-4-240_320_iot_display_pannel_type_config.png)
+
+显示屏幕驱动选择：
+
+```shell
+Location:
+    -> RT-Thread rockchip common drivers
+        -> Panel Type (<choice> [=y])
+```
+
+![2-2-5-240_320_iot_display_pannel_driver_config.png](Rockchip_Developer_Guide_RT-Thread_Display_APP/2-2-5-240_320_iot_display_pannel_driver_config.png)
+
+3）LittlevGL组件的配置
 
 ```shell
 Location:
@@ -189,53 +272,42 @@ Location:
             -> LittlevGL2RTT Component Options
 ```
 
-按照以下信息配置LittlevGL GUI：
+![2-2-6-240_320_iot_diaplay_lvgl_config.png](Rockchip_Developer_Guide_RT-Thread_Display_APP/2-2-6-240_320_iot_diaplay_lvgl_config.png)
 
-![3-2-1-240_320_iot_diaplay_lvgl_config.png](Rockchip_Developer_Guide_RT-Thread_Display_APP/3-2-1-240_320_iot_diaplay_lvgl_config.png)
-
-3）开发板配置
-
-```shell
-Location:
-    -> RT-Thread board config
-```
-
-按照以下信息选择开发板配置：
-
-![3-2-2-240_320_iot_diaplay_board_config.png](Rockchip_Developer_Guide_RT-Thread_Display_APP/3-2-2-240_320_iot_diaplay_board_config.png)
-
-4）Pannel配置
-
-```shell
-Location:
-    -> RT-Thread rockchip common drivers
-```
-
-按照以下配置，选择240x320屏幕
-
-![3-2-3-240_320_iot_diaplay_pannel_config.png](Rockchip_Developer_Guide_RT-Thread_Display_APP/3-2-3-240_320_iot_diaplay_pannel_config.png)
-
-5）显示应用配置
+4）显示应用配置
 
 ```shell
 Location:
     -> RT-Thread application
 ```
 
-按照以下配置，打开“IoT display enable”配置
+![2-2-7-240_320_iot_diaplay_app_config.png](Rockchip_Developer_Guide_RT-Thread_Display_APP/2-2-7-240_320_iot_diaplay_app_config.png)
 
-![3-2-4-240_320_iot_diaplay_app_config.png](Rockchip_Developer_Guide_RT-Thread_Display_APP/3-2-4-240_320_iot_diaplay_app_config.png)
+## 3 固件编译与下载
 
-### 2.3 编译与执行
+### 3.1 编译
 
-配置完成之后，在工程目录下执行编译命令：
+配置完成之后，在工程目录下执行以下命令，完成编译与打包过程：
 
 ```shell
 usr@host:~/rt-thread/bsp/rockchip/rk2108$ ./build.sh
 ```
 
-编译完成之后将固件下载到开发板查看显示效果。
+编译完成之后，在工程目录下的image/目录下，生成需要下载的固件：
 
-## 3 参考文档
+```shell
+├── Image
+    ├── Firmware.img
+    └── rk2108_db_loader.bin
+```
+
+### 3.2 固件下载
+
+1）Windows下固件下载
+
+Windows下使用Rockchip AndroidTool_Release_vx.xx固件下载工具进行下载：
+![1-2-11-720_1280_clock_demo_firmware_upgrade.png](Rockchip_Developer_Guide_RT-Thread_Display_APP/1-2-11-720_1280_clock_demo_firmware_upgrade.png)
+
+## 4 参考文档
 
 1. [LittlevGL GUI 参考文献](https://littlevgl.com/)
