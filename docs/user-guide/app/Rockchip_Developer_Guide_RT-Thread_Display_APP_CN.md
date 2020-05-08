@@ -2,9 +2,9 @@
 
 文件标识：RK-KF-YF-342
 
-发布版本：V1.1.0
+发布版本：V1.2.0
 
-日期：2020-03-09
+日期：2020-05-08
 
 文件密级：□绝密   □秘密   □内部资料   ■公开
 
@@ -67,6 +67,7 @@ Fuzhou Rockchip Electronics Co., Ltd.
 | ---------- | --------| :--------- | ------------ |
 | V1.0.0    | 郑永智 | 2019-09-20 | 初始版本     |
 | V1.1.0    | 郑永智 | 2019-03-09 | 文档格式整理     |
+| V1.2.0 | 钟勇汪 | 2020-05-08 | 修改编译命令 |
 
 **目录**
 
@@ -80,7 +81,7 @@ Fuzhou Rockchip Electronics Co., Ltd.
 
 基于 720x1280 屏幕的clock demo用例代码路径为：
 
-```
+```shell
 .
 ├── applications
     └── clock
@@ -92,14 +93,14 @@ Fuzhou Rockchip Electronics Co., Ltd.
 
 1）进入工程目录，执行menuconfig命令
 
-```
+```shell
 usr@host:~/rt-thread$ cd bsp/rockchip/rk2108/
 usr@host:~/rt-thread/bsp/rockchip/rk2108$ scons --menuconfig
 ```
 
 2）LittlevGL组件的配置
 
-```
+```shell
 Location:
   -> RT-Thread Components
       -> System
@@ -113,7 +114,7 @@ Location:
 
 3）开发板配置
 
-```
+```shell
 Location:
     -> RT-Thread board config
 ```
@@ -124,7 +125,7 @@ Location:
 
 4）Pannel配置
 
-```
+```shell
 Location:
     -> RT-Thread rockchip common drivers
 ```
@@ -135,7 +136,7 @@ Location:
 
 5）显示应用配置
 
-```
+```shell
 Location:
     -> RT-Thread application
 ```
@@ -148,8 +149,8 @@ Location:
 
 配置完成之后，在工程目录下执行编译命令：
 
-```
-usr@host:~/rt-thread/bsp/rockchip/rk2108$ scons
+```shell
+usr@host:~/rt-thread/bsp/rockchip/rk2108$ ./build.sh
 ```
 
 编译完成之后将固件下载到开发板查看显示效果。
@@ -160,7 +161,7 @@ usr@host:~/rt-thread/bsp/rockchip/rk2108$ scons
 
 基于 240x320 屏幕的RK_IoT_Display用例代码路径为：
 
-```
+```shell
 .
 ├── applications
     └── rk_iot_display
@@ -172,7 +173,7 @@ usr@host:~/rt-thread/bsp/rockchip/rk2108$ scons
 
 1） 进入工程目录，执行menuconfig命令
 
-```
+```shell
 usr@host:~/rt-thread$ cd bsp/rockchip/rk2108/
 usr@host:~/rt-thread/bsp/rockchip/rk2108$ scons --menuconfig
 
@@ -180,7 +181,7 @@ usr@host:~/rt-thread/bsp/rockchip/rk2108$ scons --menuconfig
 
 2）LittlevGL组件的配置
 
-```
+```shell
 Location:
   -> RT-Thread Components
       -> System
@@ -194,7 +195,7 @@ Location:
 
 3）开发板配置
 
-```
+```shell
 Location:
     -> RT-Thread board config
 ```
@@ -205,7 +206,7 @@ Location:
 
 4）Pannel配置
 
-```
+```shell
 Location:
     -> RT-Thread rockchip common drivers
 ```
@@ -216,7 +217,7 @@ Location:
 
 5）显示应用配置
 
-```
+```shell
 Location:
     -> RT-Thread application
 ```
@@ -229,8 +230,8 @@ Location:
 
 配置完成之后，在工程目录下执行编译命令：
 
-```
-usr@host:~/rt-thread/bsp/rockchip/rk2108$ scons
+```shell
+usr@host:~/rt-thread/bsp/rockchip/rk2108$ ./build.sh
 ```
 
 编译完成之后将固件下载到开发板查看显示效果。

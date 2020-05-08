@@ -1,6 +1,12 @@
 # Release Notes
 
 ---
+## Version 1.2.3 (2020-05-08)
+
+- Update Rockchip_Developer_FAQ_RK2108_EVB_CN.md
+
+- Update Rockchip_Developer_Guide_RT-Thread_Display_APP_CN.md
+
 ## Version 1.2.2 (2020-03-31)
 
 - Update Rockchip_Developer_Guide_RT-Thread_OTA_CN.md

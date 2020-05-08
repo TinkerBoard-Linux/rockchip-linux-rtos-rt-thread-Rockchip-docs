@@ -1,10 +1,10 @@
 # RK2108B_EVB使用指南
 
-发布版本：1.0
+发布版本：V1.1.0
 
 作者邮箱：zyw@rock-chips.com
 
-日期：2019.08
+日期：2020.05
 
 文件密级：仅限RK内部使用
 
@@ -32,7 +32,8 @@
 
 | **日期**   | **版本** | **作者** | **修改说明** |
 | ---------- | -------- | -------- | ------------ |
-| 2019-08-13 | V1.0     | 钟勇汪   |              |
+| 2019-08-13 | V1.0.0   | 钟勇汪   |              |
+| 2020-05-08 | V1.1.0   | 钟勇汪   | 修改编译命令 |
 
 ***
 
@@ -74,8 +75,7 @@ repo init --repo-url ssh://10.10.10.29:29418/android/tools/repo -u ssh://10.10.1
 
 ```
 cd rt-thread/bsp/rockchip/rk2108
-scons -j8
-mkimage.sh
+./build.sh
 ```
 
 生成的固件在 Image 目录，Firmware.img 是编译新生成的固件文件。
@@ -95,8 +95,7 @@ scons --menuconfig
 ```
 cd rt-thread/bsp/rockchip/rk2108
 scons --useconfig=board/rk2108b_evb/defconfig
-scons -j8
-mkimage.sh
+./build.sh
 ```
 
 注意： scons --useconfig=board/rk2108b_evb/defconfig 实际仅生成 rtconfig.h 用于编译，它不会去修改 .config。所以此时再去 scons --menuconfig，又会使用 .config 里面的配置来生成 rtconfig.h。
@@ -141,13 +140,15 @@ sudo ./upgrade rd
 
 升级按 Reset，RK2108 EVB 的 debug 口也能看到打印：
 
-	 \ | /
-	- RT -     Thread Operating System
-	 / | \     3.1.3 build Jul 26 2019
-	 2006 - 2019 Copyright by rt-thread team
-	mount fs[elm] on / failed.
-	testing sleep 1s:
-	msh />actual tick is:1000
+```shell
+ \ | /
+- RT -     Thread Operating System
+ / | \     3.1.3 build Jul 26 2019
+ 2006 - 2019 Copyright by rt-thread team
+mount fs[elm] on / failed.
+testing sleep 1s:
+msh />actual tick is:1000
+```
 
 ## 5. JTAG调试
 
@@ -155,13 +156,13 @@ sudo ./upgrade rd
 
 RK2108 的 JTAG 口和 UART0 口是复用的 IO 口，所以 JTAG 和 Debug 串口无法同时使用。如果需要 JTAG，需要在scons --menuconfig 中把
 
-```
+```shell
 M4_JTAG_ENABLE [=y]
 ```
 
 如果您需要同时使用 JTAG 和 Debug 串口，建议飞线使用 UART2(但会造成BT无法使用），飞线后别忘了修改以下配置来启用 Debug 串口：
 
-```
+```shell
 RT_CONSOLE_DEVICE_NAME [=uart2]
 RT_USING_UART2 [=y]
 ```
@@ -174,7 +175,7 @@ RT_USING_UART2 [=y]
 
 RK2108 默认支持 FAT 文件系统，在 bsp/rockchip/rk2108/board/rk2108b_evb/mnt.c 可以找到分区表：
 
-```
+```c
 struct rt_flash_partition flash_parts[] =
 {
     /* gpt */
@@ -218,11 +219,11 @@ struct rt_flash_partition flash_parts[] =
 
 分区表里面的单位是 Byte，下面升级工具用到的偏移和 size 是扇区数。root 分区的 offset 是 0x220000，对应 block 号是：0x220000/512 = 0x1100，size 的 block 数 = 0xde0000/512 = 0x6f00。
 
-目前的代码工程中，使用 scons && ./mkimage.sh 编译打包后得到的 Firmware.img 文件并不包含这个 root 分区。所以需要自行制作 root 分区固件，并使用下载工具自行下载 root 分区。方法如下：
+目前的代码工程中，使用 ./build.sh 编译打包后得到的 Firmware.img 文件并不包含这个 root 分区。所以需要自行制作 root 分区固件，并使用下载工具自行下载 root 分区。方法如下：
 
 制作 size 为 10MB 的 VFAT 分区：
 
-```
+```shell
 dd if=/dev/zero of=./root.img bs=4096 count=2560
 mkfs.msdos -S 4096 root.img
 mkdir rootfs
@@ -249,7 +250,7 @@ sudo upgrade_tool wl 0x1100 root.img
 
 仅支持 Linux 上操作：
 
-```
+```shell
 $sudo upgrade_tool db rk2108_db_loader.bin
 $sudo upgrade_tool 选择1，进入操作模式
 
@@ -270,7 +271,7 @@ Rockusb>RL 0x1100 0x6f00 root_out.img
 
 2. ### 怎么关闭XIP
 
-   ```
+   ```shell
    vi rt-thread/bsp/rockchip/rk2108/rtconfig.py
    ```
 
