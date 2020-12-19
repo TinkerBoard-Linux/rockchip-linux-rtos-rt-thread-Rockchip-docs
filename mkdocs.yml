@@ -48,6 +48,7 @@ nav:
         - Audio: missing.md
         - Board:
             - RK2108_EVB: faq/board/Rockchip_Developer_FAQ_RK2108_EVB_CN.md
+            - RK625_EVB: faq/board/Rockchip_Developer_FAQ_RK625_EVB_CN.md
         - Clock: missing.md
         - Display: missing.md
         - DSP: missing.md
